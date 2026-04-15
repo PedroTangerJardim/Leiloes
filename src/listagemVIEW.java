@@ -6,6 +6,8 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.sql.PreparedStatement;
+
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -141,17 +143,30 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
-        
-        ProdutosDAO produtosdao = new ProdutosDAO();
-        
-        //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+        try {
+        int id = Integer.parseInt(id_produto_venda.getText());
+
+        Connection conn = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/uc11?useSSL=false&serverTimezone=UTC",
+            "root",
+            "12345"
+        );
+
+        String sql = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+
+        stmt.setInt(1, id);
+        stmt.execute();
+
+        JOptionPane.showMessageDialog(null, "Produto vendido!");
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+    }
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        //vendasVIEW vendas = new vendasVIEW(); 
-        //vendas.setVisible(true);
+        new vendasVIEW().setVisible(true);
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
