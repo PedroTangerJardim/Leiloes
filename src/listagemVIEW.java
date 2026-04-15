@@ -1,5 +1,10 @@
 
 import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -16,10 +21,10 @@ public class listagemVIEW extends javax.swing.JFrame {
     /**
      * Creates new form listagemVIEW
      */
-    public listagemVIEW() {
-        initComponents();
-        listarProdutos();
-    }
+   public listagemVIEW() {
+    initComponents();
+    carregarTabela();
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -222,4 +227,32 @@ public class listagemVIEW extends javax.swing.JFrame {
         }
     
     }
+   
+    public void carregarTabela() {
+    try {
+        Connection conn = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/uc11?useSSL=false&serverTimezone=UTC",
+            "root",
+            "12345"
+        );
+
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM produtos");
+
+        DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
+        model.setRowCount(0); // limpa tabela
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("nome"),
+                rs.getInt("valor"),
+                rs.getString("status")
+            });
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+    }
+}
 }
